@@ -20,15 +20,14 @@ function TimetableTable({ title, bodyHtml }: { title: string; bodyHtml: string }
       if (animId) cancelAnimationFrame(animId);
     }
 
-    // Wait for raw HTML to fully render before measuring
     timerId = setTimeout(function () {
       if (stopped || !container) return;
 
       var invisible = container.scrollHeight - container.clientHeight;
       if (invisible <= 0) return;
 
-      var scroll_speed = 100; // px per second, matches original
-      var delay_time = 5000; // 5s pause at top/bottom, matches original
+      var scroll_speed = 100;
+      var delay_time = 5000;
       var scroll_time = Math.round(invisible / scroll_speed * 1000);
 
       function animateTo(target: number, duration: number, done: () => void) {
@@ -49,11 +48,9 @@ function TimetableTable({ title, bodyHtml }: { title: string; bodyHtml: string }
 
       function cycle() {
         if (stopped) return;
-        // Pause at top, then scroll down
         timerId = setTimeout(function () {
           if (stopped) return;
           animateTo(invisible, scroll_time, function () {
-            // Pause at bottom, then scroll back up
             timerId = setTimeout(function () {
               if (stopped) return;
               animateTo(0, scroll_time, cycle);
@@ -92,20 +89,28 @@ function TimetableTable({ title, bodyHtml }: { title: string; bodyHtml: string }
   );
 }
 
-export default function TimetableView() {
+interface TimetableViewProps {
+  apiPath?: string;
+  locationName?: string;
+}
+
+export default function TimetableView({
+  apiPath = '/api/timetable',
+  locationName = 'MIF – Didlaukio g. 47',
+}: TimetableViewProps) {
   const [data, setData] = useState<TimetableData>({ currentHtml: '', upcomingHtml: '' });
   const [time, setTime] = useState('');
 
   useEffect(function () {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/api/timetable?t=' + Date.now(), true);
+    xhr.open('GET', apiPath + '?t=' + Date.now(), true);
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
         try { setData(JSON.parse(xhr.responseText)); } catch {}
       }
     };
     xhr.send();
-  }, []);
+  }, [apiPath]);
 
   useEffect(function () {
     var tick = function () {
@@ -131,7 +136,7 @@ export default function TimetableView() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <strong className={styles.pageHeader}>MIF – Didlaukio g. 47</strong>
+        <strong className={styles.pageHeader}>{locationName}</strong>
         <strong className={styles.pageHeader}>{today}, {time}</strong>
       </div>
       <div className={styles.body}>

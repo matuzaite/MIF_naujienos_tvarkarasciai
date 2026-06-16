@@ -3,12 +3,18 @@ import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import NewsCarousel from '@/components/NewsCarousel/NewsCarousel';
 import TimetableView from '@/components/TimetableView/TimetableView';
-import styles from './RotatingDisplay.module.css';
+import styles from './LocationDisplay.module.css';
 
-const NEWS_MS = 2 * 60 * 1000;
-const TIMETABLE_MS = 1 * 60 * 1000;
+const NEWS_MS     = 4 * 60 * 1000; // 4 minutes
+const TIMETABLE_MS = 2 * 60 * 1000; // 2 minutes
 
-export default function RotatingDisplay({ initialNews }: { initialNews: any[] }) {
+interface Props {
+  initialNews: any[];
+  timetableApiPath: string;
+  locationName: string;
+}
+
+export default function LocationDisplay({ initialNews, timetableApiPath, locationName }: Props) {
   const [showTimetable, setShowTimetable] = useState(false);
 
   useEffect(() => {
@@ -30,7 +36,9 @@ export default function RotatingDisplay({ initialNews }: { initialNews: any[] })
       <div className={styles.contentArea}>
         <NewsCarousel initialItems={initialNews} />
       </div>
-      {showTimetable && <TimetableView />}
+      {showTimetable && (
+        <TimetableView apiPath={timetableApiPath} locationName={locationName} />
+      )}
     </>
   );
 }

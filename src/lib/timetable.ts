@@ -5,9 +5,17 @@ export interface TimetableData {
   upcomingHtml: string;
 }
 
-export async function fetchTimetable(): Promise<TimetableData> {
+export const TIMETABLE_SOURCES = {
+  didlaukio: 'https://tvarkarasciai.vu.lt/mif-i/lectures/',
+  saltiniu:  'https://tvarkarasciai.vu.lt/mif-iii/lectures/',
+  naugarduko:'https://tvarkarasciai.vu.lt/mif-ii/lectures/',
+} as const;
+
+export async function fetchTimetable(
+  url: string = TIMETABLE_SOURCES.didlaukio,
+): Promise<TimetableData> {
   try {
-    const res = await fetch('https://tvarkarasciai.vu.lt/mif-i/lectures/', {
+    const res = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0' },
       cache: 'no-store',
       next: { revalidate: 0 },

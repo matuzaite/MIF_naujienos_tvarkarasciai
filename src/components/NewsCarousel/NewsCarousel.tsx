@@ -63,7 +63,6 @@ export default function NewsCarousel({ initialItems }: NewsCarouselProps) {
     startAutoRotation();
   };
 
-  // Reset scroll when slide changes
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = 0;

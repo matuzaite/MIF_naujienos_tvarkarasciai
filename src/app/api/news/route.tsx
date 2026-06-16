@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { fetchNews } from '@/lib/news';
 
-export const dynamic = 'force-dynamic'; // Ensures the API always gets fresh data
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {

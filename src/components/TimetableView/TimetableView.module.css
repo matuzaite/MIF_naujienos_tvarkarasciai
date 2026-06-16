@@ -68,7 +68,6 @@
   border: 1px solid #ddd;
 }
 
-/* Bootstrap .table-striped */
 .tableWrapper :global(tbody tr:nth-of-type(odd)) {
   background-color: #f9f9f9;
 }
@@ -78,7 +77,6 @@
   text-align: center;
 }
 
-/* Maroon section header row */
 .firstHeader {
   text-transform: uppercase;
   background-color: #78003F;
@@ -90,7 +88,6 @@
   padding: 8px;
 }
 
-/* Column sub-headers */
 .subHeader {
   vertical-align: middle;
   text-transform: uppercase;
