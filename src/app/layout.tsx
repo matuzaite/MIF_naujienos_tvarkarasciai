@@ -14,14 +14,18 @@ export default function RootLayout({
   return (
     <html lang="lt" suppressHydrationWarning>
       <head>
-        {/* Fixes the React 19 fatal crash by defining globalThis for Tizen 4.0 */}
+        {/* Critical inline polyfills — must run before any other script */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `if (typeof globalThis === 'undefined') { window.globalThis = window; }`
+            __html: [
+              `if(typeof globalThis==='undefined'){window.globalThis=window;}`,
+              `if(!Array.prototype.at){Array.prototype.at=function(n){n=Math.trunc(n)||0;if(n<0)n+=this.length;return(n<0||n>=this.length)?undefined:this[n];};String.prototype.at=Array.prototype.at;}`,
+              `if(!Object.fromEntries){Object.fromEntries=function(it){var o={};for(var p of it)o[p[0]]=p[1];return o;};}`,
+            ].join('')
           }}
         />
-        {/* Provides missing modern JavaScript functions (like replaceAll, flatMap) for old Chromium */}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js-bundle/3.38.1/minified.js"></script>
+        {/* Full polyfill bundle — served locally so it works on isolated/local networks */}
+        <script src="/polyfill.js"></script>
       </head>
       <body>{children}</body>
     </html>
