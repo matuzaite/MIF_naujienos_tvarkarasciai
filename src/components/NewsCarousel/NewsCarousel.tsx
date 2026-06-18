@@ -134,6 +134,18 @@ export default function NewsCarousel({ initialItems }: NewsCarouselProps) {
     return function () { clearTimeout(reloadTimeout); };
   }, []);
 
+  // Reload when screen wakes up if page has been running > 6 hours
+  useEffect(() => {
+    var loadTime = Date.now();
+    var handleVisibility = function () {
+      if (document.visibilityState === 'visible' && Date.now() - loadTime > 6 * 60 * 60 * 1000) {
+        window.location.reload();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return function () { document.removeEventListener('visibilitychange', handleVisibility); };
+  }, []);
+
   if (items.length === 0) return <div className={styles.loading}>Naujienų nerasta</div>;
 
   return (
