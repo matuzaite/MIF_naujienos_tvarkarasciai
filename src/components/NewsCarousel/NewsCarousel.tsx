@@ -91,6 +91,10 @@ export default function NewsCarousel({ initialItems }: NewsCarouselProps) {
             if (scrollRef.current.scrollTop !== newScrollTop) {
               scrollRef.current.scrollTop = newScrollTop;
             }
+          } else {
+            // Reached the bottom — stop RAF, slide rotation will restart it on next slide
+            animationFrameId = 0;
+            return;
           }
         }
         animationFrameId = requestAnimationFrame(scrollAnimation);
@@ -120,21 +124,22 @@ export default function NewsCarousel({ initialItems }: NewsCarouselProps) {
     };
   }, [currentIndex]);
 
-  // Daily hard reload at 3 AM to clear memory
+  // Reload at 3 AM or after 8 hours — polled every minute because a single long setTimeout
+  // is silently dropped on old Samsung Tizen browsers
   useEffect(() => {
-    var now = new Date();
-    var night = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + (now.getHours() >= 3 ? 1 : 0),
-      3, 0, 0
-    );
-    var msToNight = night.getTime() - now.getTime();
-    var reloadTimeout = setTimeout(function () { window.location.reload(); }, msToNight);
-    return function () { clearTimeout(reloadTimeout); };
+    var loadTime = Date.now();
+    var id = setInterval(function () {
+      var h = new Date().getHours();
+      var m = new Date().getMinutes();
+      var elapsed = Date.now() - loadTime;
+      if ((h === 3 && m < 2) || elapsed > 8 * 60 * 60 * 1000) {
+        window.location.reload();
+      }
+    }, 60 * 1000);
+    return function () { clearInterval(id); };
   }, []);
 
-  // Reload when screen wakes up if page has been running > 6 hours
+  // Also reload on screen wake-up if page has been running > 6 hours
   useEffect(() => {
     var loadTime = Date.now();
     var handleVisibility = function () {
